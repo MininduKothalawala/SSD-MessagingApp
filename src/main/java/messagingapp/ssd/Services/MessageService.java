@@ -13,16 +13,19 @@ public class MessageService {
 
     private final MessageRepository messageRepository;
     private final EncryptionService encryptionService;
+    private final UserService userService;
 
     @Autowired
-    public MessageService(MessageRepository messageRepository, EncryptionService encryptionService) {
+    public MessageService(MessageRepository messageRepository, EncryptionService encryptionService, UserService userService) {
         this.messageRepository = messageRepository;
         this.encryptionService = encryptionService;
+        this.userService = userService;
     }
 
     //Save Message
-    public void SaveMessage(Message message){
-        message.setContent(encryptionService.encrypt(message.getContent()));
+    public void SaveMessage(Message message, String username){
+        String encKey = userService.GetUserEncryptionKey(username);
+        message.setContent(encryptionService.customEncrypt(message.getContent(), encKey));
         messageRepository.save(message);
     }
 
@@ -32,7 +35,6 @@ public class MessageService {
         List<Message> finalList = new ArrayList<>();
 
         for(Message message : messages){
-            message.setContent(encryptionService.decrypt(message.getContent()));
             finalList.add(message);
         }
 
@@ -43,10 +45,11 @@ public class MessageService {
     public List<Message> GetMessagesByUser(String username){
         List<Message> messages = messageRepository.findAll();
         List<Message> finalList = new ArrayList<>();
+        String encKey = userService.GetUserEncryptionKey(username);
 
         for(Message message : messages){
             if(message.getSender().equals(username)){
-                message.setContent(encryptionService.decrypt(message.getContent()));
+                message.setContent(encryptionService.customDecrypt(message.getContent(), encKey));
                 finalList.add(message);
             }
         }

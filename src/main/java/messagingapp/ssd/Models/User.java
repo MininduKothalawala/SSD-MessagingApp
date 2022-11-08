@@ -12,16 +12,26 @@ public class User {
     private String Password;
     private String Email;
     private String Role;
+    private String EncryptionKey;
 
     public User() {
     }
 
-    public User(String id, String username, String password, String email, String role) {
+    public User(String id, String username, String password, String email, String role, String encryptionKey) {
         Id = id;
         Username = username;
         Password = password;
         Email = email;
         Role = role;
+        EncryptionKey = encryptionKey;
+    }
+
+    public String getEncryptionKey() {
+        return EncryptionKey;
+    }
+
+    public void setEncryptionKey(String encryptionKey) {
+        EncryptionKey = encryptionKey;
     }
 
     public String getId() {

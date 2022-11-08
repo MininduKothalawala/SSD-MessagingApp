@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import javax.crypto.spec.SecretKeySpec;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +24,8 @@ public class UserService {
 
     //Register New User
     public void RegisterUser(User user){
+        String key = encryptionService.getSecureRandomKey();
+        user.setEncryptionKey(encryptionService.encrypt(key));
         user.setPassword(encryptionService.encrypt(user.getPassword()));
         userRepository.save(user);
     }
@@ -53,5 +56,31 @@ public class UserService {
         }
 
         return new org.springframework.security.core.userdetails.User(result.getUsername(), result.getPassword(), new ArrayList<>());
+    }
+
+    public String GetUserRoleByUsername(String username){
+        List<User> users = userRepository.findAll();
+        String role = null;
+
+        for (User user : users){
+            if (user.getUsername().equals(username)){
+                role = user.getRole();
+            }
+        }
+
+        return role;
+    }
+
+    public String GetUserEncryptionKey(String username){
+        List<User> users = userRepository.findAll();
+        String key = null;
+
+        for (User user : users){
+            if (user.getUsername().equals(username)){
+                key = encryptionService.decrypt(user.getEncryptionKey());
+            }
+        }
+
+        return key;
     }
 }
