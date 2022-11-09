@@ -5,6 +5,7 @@ import messagingapp.ssd.Repositories.MessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +27,7 @@ public class MessageService {
     public void SaveMessage(Message message, String username){
         String encKey = userService.GetUserEncryptionKey(username);
         message.setContent(encryptionService.customEncrypt(message.getContent(), encKey));
+        message.setSentTime(LocalDateTime.now());
         messageRepository.save(message);
     }
 

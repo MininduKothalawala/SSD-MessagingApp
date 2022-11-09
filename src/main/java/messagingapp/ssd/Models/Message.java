@@ -15,17 +15,20 @@ public class Message {
     private String AudienceType;
     private String[] Receivers;
     private LocalDateTime SentTime;
+    private String Type;
 
     public Message() {
     }
 
-    public Message(String  id, String content, String sender, String audienceType, String[] receivers, LocalDateTime sentTime) {
+    public Message(String id, String content, String sender, String audienceType, String[] receivers,
+                   LocalDateTime sentTime, String type) {
         Id = id;
         Content = content;
         Sender = sender;
         AudienceType = audienceType;
         Receivers = receivers;
         SentTime = sentTime;
+        Type = type;
     }
 
     public String getId() {
@@ -74,5 +77,13 @@ public class Message {
 
     public void setSentTime(LocalDateTime sentTime) {
         SentTime = sentTime;
+    }
+
+    public String getType() {
+        return Type;
+    }
+
+    public void setType(String type) {
+        Type = type;
     }
 }

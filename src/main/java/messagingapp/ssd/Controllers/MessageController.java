@@ -45,6 +45,7 @@ public class MessageController {
         try {
             String token = Authorization.substring(7);
             String username = jwtTokenUtil.getUsernameFromToken(token);
+            message.setType("Text");
             messageService.SaveMessage(message, username);
             return new ResponseEntity<>(HttpStatus.OK);
         }
@@ -96,10 +97,19 @@ public class MessageController {
             String username = jwtTokenUtil.getUsernameFromToken(token);
             String role = userService.GetUserRoleByUsername(username);
 
-            if (role != "Manager"){
-                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            if (role.equalsIgnoreCase("Manager")){
+                String fileId = fileService.addFile(file);
+
+                Message message = new Message();
+                message.setType("File");
+                message.setContent(fileId);
+                message.setAudienceType("Private");
+                message.setSender(username);
+                messageService.SaveMessage(message, username);
+
+                return new ResponseEntity<>(fileId, HttpStatus.OK);
             }
-            return new ResponseEntity<>(fileService.addFile(file), HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         catch (Exception e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
